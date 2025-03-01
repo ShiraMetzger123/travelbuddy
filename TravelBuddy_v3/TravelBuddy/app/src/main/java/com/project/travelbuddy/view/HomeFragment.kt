@@ -3,6 +3,7 @@ package com.project.travelbuddy.view
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.project.travelbuddy.R
@@ -23,7 +24,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewModel = ViewModelProvider(this).get(TravelViewModel::class.java)
 
         viewModel.travelPosts.observe(viewLifecycleOwner) { posts ->
-            adapter = TravelPostAdapter(posts)
+            adapter = TravelPostAdapter(posts){ postId ->
+                val bundle = bundleOf("postId" to postId)
+                findNavController().navigate(R.id.action_homeFragment_to_postDetailFragment, bundle)
+            }
             binding.recyclerView.adapter = adapter
         }
 
