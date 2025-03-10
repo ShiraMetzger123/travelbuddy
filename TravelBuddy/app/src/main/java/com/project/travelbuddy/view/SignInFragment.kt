@@ -1,29 +1,24 @@
 package com.project.travelbuddy.view
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Patterns
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.auth.FirebaseAuth
 import com.project.travelbuddy.R
 import com.project.travelbuddy.databinding.FragmentSignInBinding
-import com.project.travelbuddy.util.Constant.validateData
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
     private lateinit var binding: FragmentSignInBinding
-    private lateinit var auth: FirebaseAuth
+    private lateinit var email: String
+    private lateinit var password: String
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentSignInBinding.bind(view)
-        auth = FirebaseAuth.getInstance()
-
-        if (auth.currentUser != null) {
-            findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
-        }
 
         binding.tvSignUp.setOnClickListener {
             findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
@@ -31,29 +26,35 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         binding.loginBtn.setOnClickListener {
             binding.tilEmail.error = null
             binding.tilPassword.error = null
-            val validatedData = validateData(
-                binding.tieEmail,
-                binding.tiePassword,
-                binding.tilEmail,
-                binding.tilPassword
-            )
-            if (validatedData != null) {
-                val (email, password) = validatedData
-                signInUser(email, password)
-            }
+            validateData()
         }
     }
 
-    private fun signInUser(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
-                } else {
-                    Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
+    private fun validateData() {
+        email = binding.tieEmail.text.toString().trim()
+        password = binding.tiePassword.text.toString()
+
+        if (TextUtils.isEmpty(email)) {
+            binding.tilEmail.error = "Please enter email"
+            return
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = "Invalid Email format"
+            return
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            binding.tilPassword.error = "Please enter password"
+            return
+        }
+
+        if (password.length < 6) {
+            binding.tilPassword.error = "Password must be at least 6 characters long "
+            return
+        } else {
+
+        }
     }
 
 }
