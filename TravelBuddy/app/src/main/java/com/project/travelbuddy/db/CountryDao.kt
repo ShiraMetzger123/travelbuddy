@@ -2,13 +2,14 @@ package com.project.travelbuddy.db
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
 interface CountryDao {
-    @Insert
-    suspend fun insert(country: CountryEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(countries: List<CountryEntity>)
 
-    @Query("SELECT * FROM countries WHERE name = :countryName LIMIT 1")
-    suspend fun getCountryByName(countryName: String): CountryEntity?
+    @Query("SELECT * FROM countries")
+    suspend fun getAllCountries(): List<CountryEntity>
 }

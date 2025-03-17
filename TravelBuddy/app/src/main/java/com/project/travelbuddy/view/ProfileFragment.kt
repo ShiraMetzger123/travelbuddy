@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -70,14 +69,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         firestore.collection("posts")
             .whereEqualTo("authorId", userId)
             .get().addOnSuccessListener { querySnapshot ->
-                if (querySnapshot.isEmpty) {
-                    Log.d("ProfileFragment", "No posts found for user: $userId")
-                } else {
-                    Log.d("ProfileFragment", "Found ${querySnapshot.size()} posts for user: $userId")
-                }
 
                 val posts = querySnapshot.toObjects(TravelPost::class.java)
-                Log.d("ProfileFragment", "Posts: $posts")
 
                 adapter = TravelPostAdapter(posts) { postId ->
                     val bundle = bundleOf("postId" to postId)
@@ -86,7 +79,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 binding.recyclerViewMyPosts.adapter = adapter
             }
             .addOnFailureListener { e ->
-                Log.e("ProfileFragment", "Error fetching user posts: ${e.message}")
+                Toast.makeText(requireContext(), "Error fetching user posts: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 

@@ -2,7 +2,7 @@ package com.project.travelbuddy.model
 
 data class Country(
     val name: Name,   // Change to Name object
-    val capital: List<String>,
+    val capital: List<String>?,
     val region: String,
     val population: Long,
     val flags: Flags   // Change to Flags object

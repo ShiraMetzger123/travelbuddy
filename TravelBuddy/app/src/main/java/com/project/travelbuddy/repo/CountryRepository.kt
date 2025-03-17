@@ -6,23 +6,28 @@ import com.project.travelbuddy.db.CountryEntity
 
 class CountryRepository(private val countryDao: CountryDao) {
 
-    suspend fun getCountryData(countryName: String): CountryEntity {
-        // Check if country data is available offline
-        var country = countryDao.getCountryByName(countryName)
+    suspend fun getCountriesData(): List<CountryEntity> {
+        // Check if we have cached country data
+        var countries = countryDao.getAllCountries()
 
-        if (country == null) {
+        if (countries.isEmpty()) {
             // Fetch from API if not available offline
-            val countryFromApi = ApiService.retrofitService.getCountryByName(countryName).first()
-            country = CountryEntity(
-                countryFromApi.name.common,
-                countryFromApi.capital.firstOrNull() ?: "",
-                countryFromApi.region,
-                countryFromApi.population,
-                countryFromApi.flags.png
-            )
-            // Save to Room
-            countryDao.insert(country)
+            val countriesFromApi = ApiService.retrofitService.getAllCountries()
+
+            countries = countriesFromApi.map { country ->
+                CountryEntity(
+                    name = country.name.common,
+                    capital = country.capital?.firstOrNull() ?: "N/A",
+                    region = country.region,
+                    population = country.population,
+                    flag = country.flags.png
+                )
+            }
+
+            // Save to Room database
+            countryDao.insertAll(countries)
         }
-        return country
+
+        return countries
     }
 }
