@@ -24,6 +24,8 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private var imageUri: Uri? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +37,10 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
 
         binding.btnPickImage.setOnClickListener { pickImage() }
         binding.btnSubmitPost.setOnClickListener { uploadPost() }
+        binding.btnPickLocation.setOnClickListener {
+            val locationPickerIntent = Intent(context, LocationPickerActivity::class.java)
+            startActivityForResult(locationPickerIntent, LOCATION_PICK_REQUEST)
+        }
     }
 
     private fun pickImage() {
@@ -48,6 +54,11 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
             imageUri = data.data
             binding.ivPostImage.setImageURI(imageUri)
         }
+        if (requestCode == LOCATION_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            latitude = data.getDoubleExtra("latitude", 0.0)
+            longitude = data.getDoubleExtra("longitude", 0.0)
+            binding.etLocation.setText("Lat: $latitude, Lng: $longitude")
+        }
     }
 
     private fun uploadPost() {
@@ -55,7 +66,7 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
         val description = binding.etDescription.text.toString().trim()
         val location = binding.etLocation.text.toString().trim()
 
-        if (title.isEmpty() || description.isEmpty() || location.isEmpty() || imageUri == null) {
+        if (title.isEmpty() || description.isEmpty() || location.isEmpty() || latitude == null || longitude == null || imageUri == null) {
             Toast.makeText(requireContext(), "All fields are required!", Toast.LENGTH_SHORT).show()
             return
         }
@@ -80,6 +91,8 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
             description = description,
             location = location,
             imageUrl = imageUrl,
+            latitude = latitude ?: 0.0,
+            longitude = longitude ?: 0.0,
             authorId = auth.currentUser?.uid ?: ""
         )
 
@@ -96,5 +109,6 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1
+        private const val LOCATION_PICK_REQUEST = 2
     }
 }
