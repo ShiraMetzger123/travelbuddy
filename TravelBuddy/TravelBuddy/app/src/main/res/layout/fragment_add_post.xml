@@ -13,7 +13,7 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:contentDescription="Post Image"
-        android:background="@android:color/darker_gray" />
+        android:background="@drawable/background_img" />
 
     <!-- Pick Image Button -->
     <Button
@@ -49,6 +49,13 @@
         android:hint="Enter Location"
         android:inputType="text"
         android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/btnPickLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pick Location"
+        android:layout_marginTop="16dp"/>
 
     <!-- Submit Post Button -->
     <Button

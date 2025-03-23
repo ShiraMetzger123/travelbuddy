@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -16,6 +15,8 @@ import com.google.firebase.storage.StorageReference
 import com.project.travelbuddy.R
 import com.project.travelbuddy.databinding.FragmentAddPostBinding
 import com.project.travelbuddy.model.TravelPost
+import com.project.travelbuddy.util.Constant
+import com.project.travelbuddy.util.Constant.showToast
 
 class AddPostFragment : Fragment(R.layout.fragment_add_post) {
 
@@ -24,6 +25,8 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private var imageUri: Uri? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +38,10 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
 
         binding.btnPickImage.setOnClickListener { pickImage() }
         binding.btnSubmitPost.setOnClickListener { uploadPost() }
+        binding.btnPickLocation.setOnClickListener {
+            val locationPickerIntent = Intent(context, LocationPickerActivity::class.java)
+            startActivityForResult(locationPickerIntent, LOCATION_PICK_REQUEST)
+        }
     }
 
     private fun pickImage() {
@@ -48,15 +55,22 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
             imageUri = data.data
             binding.ivPostImage.setImageURI(imageUri)
         }
+        if (requestCode == LOCATION_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            latitude = data.getDoubleExtra("latitude", 0.0)
+            longitude = data.getDoubleExtra("longitude", 0.0)
+            binding.etLocation.setText("Lat: $latitude, Lng: $longitude")
+        }
     }
 
     private fun uploadPost() {
+        Constant.showLoading(requireContext())
         val title = binding.etTitle.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
         val location = binding.etLocation.text.toString().trim()
 
-        if (title.isEmpty() || description.isEmpty() || location.isEmpty() || imageUri == null) {
-            Toast.makeText(requireContext(), "All fields are required!", Toast.LENGTH_SHORT).show()
+        if (title.isEmpty() || description.isEmpty() || location.isEmpty() || latitude == null || longitude == null || imageUri == null) {
+            Constant.hideLoading()
+            showToast(requireContext(), "All fields are required!")
             return
         }
 
@@ -68,7 +82,8 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Image upload failed!", Toast.LENGTH_SHORT).show()
+                Constant.hideLoading()
+                showToast(requireContext(), "Image upload failed!")
             }
     }
 
@@ -80,21 +95,26 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
             description = description,
             location = location,
             imageUrl = imageUrl,
+            latitude = latitude ?: 0.0,
+            longitude = longitude ?: 0.0,
             authorId = auth.currentUser?.uid ?: ""
         )
 
         firestore.collection("posts").document(postId)
             .set(post)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Post added successfully!", Toast.LENGTH_SHORT).show()
+                Constant.hideLoading()
+                showToast(requireContext(), "Post added successfully!")
                 findNavController().navigate(R.id.action_addPostFragment_to_homeFragment)
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to add post!", Toast.LENGTH_SHORT).show()
+                Constant.hideLoading()
+                showToast(requireContext(), "Failed to add post!")
             }
     }
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1
+        private const val LOCATION_PICK_REQUEST = 2
     }
 }

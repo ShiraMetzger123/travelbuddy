@@ -102,6 +102,14 @@
             app:popUpTo="@id/navigation_before_login"
             app:popUpToInclusive="true"/>
     </fragment>
+    <fragment
+        android:id="@+id/exploreFragment"
+        android:name="com.project.travelbuddy.view.ExploreFragment"
+        android:label="ExploreFragment" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.project.travelbuddy.view.MapFragment"
+        android:label="MapFragment" />
 
 
 </navigation>

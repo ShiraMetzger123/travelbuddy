@@ -2,7 +2,6 @@ package com.project.travelbuddy.view
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -10,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.project.travelbuddy.R
 import com.project.travelbuddy.databinding.FragmentSignUpBinding
 import com.project.travelbuddy.model.UserProfile
+import com.project.travelbuddy.util.Constant.showToast
 import com.project.travelbuddy.util.Constant.validateData
 
 class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
@@ -52,7 +52,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
                         saveUserToFirestore(userId, email)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Registration failed.", Toast.LENGTH_SHORT).show()
+                    showToast(requireContext(), "Registration failed.")
                 }
             }
     }
@@ -62,11 +62,11 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
         FirebaseFirestore.getInstance().collection("users").document(userId)
             .set(userProfile)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "User profile created!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "User profile created!")
                 findNavController().navigate(R.id.action_signUpFragment_to_homeFragment)
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to create profile!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Failed to create profile!")
             }
     }
 

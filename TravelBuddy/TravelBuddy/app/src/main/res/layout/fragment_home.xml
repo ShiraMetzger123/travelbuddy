@@ -20,5 +20,5 @@
         android:layout_marginEnd="@dimen/_16sdp"
         android:layout_marginBottom="@dimen/_60sdp"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/teal_700" />
+        app:backgroundTint="@color/yellow" />
 </LinearLayout>

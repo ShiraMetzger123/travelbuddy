@@ -1,9 +1,14 @@
 package com.project.travelbuddy.util
 
+import android.app.AlertDialog
+import android.content.Context
 import android.text.TextUtils
 import android.util.Patterns
+import android.view.LayoutInflater
+import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.project.travelbuddy.R
 
 object Constant {
 
@@ -38,5 +43,29 @@ object Constant {
 
         return Pair(email, password)
 
+    }
+
+    fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private var progressDialog: AlertDialog? = null
+
+    fun showLoading(context: Context) {
+        if (progressDialog != null && progressDialog!!.isShowing) return
+
+        val builder = AlertDialog.Builder(context)
+        val inflater = LayoutInflater.from(context)
+        val dialogView = inflater.inflate(R.layout.dialog_loading, null)
+
+        builder.setView(dialogView)
+        builder.setCancelable(false)
+        progressDialog = builder.create()
+        progressDialog?.show()
+    }
+
+    fun hideLoading() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 }

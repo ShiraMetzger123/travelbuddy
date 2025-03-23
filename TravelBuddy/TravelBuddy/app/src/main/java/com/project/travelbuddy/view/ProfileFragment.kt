@@ -5,9 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -20,6 +18,7 @@ import com.project.travelbuddy.adapter.TravelPostAdapter
 import com.project.travelbuddy.databinding.FragmentProfileBinding
 import com.project.travelbuddy.model.TravelPost
 import com.project.travelbuddy.model.UserProfile
+import com.project.travelbuddy.util.Constant.showToast
 import com.squareup.picasso.Picasso
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
@@ -70,14 +69,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         firestore.collection("posts")
             .whereEqualTo("authorId", userId)
             .get().addOnSuccessListener { querySnapshot ->
-                if (querySnapshot.isEmpty) {
-                    Log.d("ProfileFragment", "No posts found for user: $userId")
-                } else {
-                    Log.d("ProfileFragment", "Found ${querySnapshot.size()} posts for user: $userId")
-                }
 
                 val posts = querySnapshot.toObjects(TravelPost::class.java)
-                Log.d("ProfileFragment", "Posts: $posts")
 
                 adapter = TravelPostAdapter(posts) { postId ->
                     val bundle = bundleOf("postId" to postId)
@@ -86,7 +79,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 binding.recyclerViewMyPosts.adapter = adapter
             }
             .addOnFailureListener { e ->
-                Log.e("ProfileFragment", "Error fetching user posts: ${e.message}")
+                showToast(requireContext(), "Error fetching user posts: ${e.message}")
             }
     }
 
@@ -108,7 +101,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val updatedName = binding.etDisplayName.text.toString().trim()
 
         if (updatedName.isEmpty()) {
-            Toast.makeText(requireContext(), "Name cannot be empty!", Toast.LENGTH_SHORT).show()
+            showToast(requireContext(), "Name cannot be empty!")
             return
         }
 
@@ -129,7 +122,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Image upload failed!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Image upload failed!")
             }
     }
 
@@ -140,10 +133,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         firestore.collection("users").document(userId)
             .update(updateData)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Profile updated successfully!")
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to update profile!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Failed to update profile!")
             }
     }
 
