@@ -10,7 +10,8 @@ import com.project.travelbuddy.R
 import com.project.travelbuddy.model.TravelPost
 import com.squareup.picasso.Picasso
 
-class TravelPostAdapter(private val posts: List<TravelPost>) :
+class TravelPostAdapter(private val posts: List<TravelPost>,
+                        private val onPostClick: (String) -> Unit ) :
     RecyclerView.Adapter<TravelPostAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -29,6 +30,9 @@ class TravelPostAdapter(private val posts: List<TravelPost>) :
                 Picasso.get().load(post.imageUrl).into(image)
             } else {
                 image.setImageResource(R.drawable.splash_image) // Fallback image
+            }
+            itemView.setOnClickListener {
+                onPostClick(post.id)  // Pass post ID to navigate
             }
         }
     }
