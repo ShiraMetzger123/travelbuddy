@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [CountryEntity::class], version = 1)
+@Database(entities = [CountryEntity::class], version = 2)
 abstract class TravelBuddyDatabase : RoomDatabase() {
 
     abstract fun countryDao(): CountryDao
@@ -20,7 +20,7 @@ abstract class TravelBuddyDatabase : RoomDatabase() {
                     context.applicationContext,
                     TravelBuddyDatabase::class.java,
                     "travel_buddy_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

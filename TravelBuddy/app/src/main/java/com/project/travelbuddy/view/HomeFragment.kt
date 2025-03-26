@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.project.travelbuddy.R
 import com.project.travelbuddy.adapter.TravelPostAdapter
 import com.project.travelbuddy.databinding.FragmentHomeBinding
+import com.project.travelbuddy.util.Constant
 import com.project.travelbuddy.viewmodel.TravelViewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -24,7 +25,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding = FragmentHomeBinding.bind(view)
         viewModel = ViewModelProvider(this).get(TravelViewModel::class.java)
 
+        Constant.showLoading(requireContext())
+
         viewModel.travelPosts.observe(viewLifecycleOwner) { posts ->
+            Constant.hideLoading()
             adapter = TravelPostAdapter(posts){ postId ->
                 val bundle = bundleOf("postId" to postId)
                 findNavController().navigate(R.id.action_homeFragment_to_postDetailFragment, bundle)

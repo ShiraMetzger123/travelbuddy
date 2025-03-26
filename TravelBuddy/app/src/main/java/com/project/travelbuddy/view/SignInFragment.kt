@@ -2,12 +2,12 @@ package com.project.travelbuddy.view
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.project.travelbuddy.R
 import com.project.travelbuddy.databinding.FragmentSignInBinding
+import com.project.travelbuddy.util.Constant.showToast
 import com.project.travelbuddy.util.Constant.validateData
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
@@ -50,8 +50,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
                 if (task.isSuccessful) {
                     findNavController().navigate(R.id.action_signInFragment_to_homeFragment)
                 } else {
-                    Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT)
-                        .show()
+                    showToast(requireContext(), "Authentication failed.")
                 }
             }
     }

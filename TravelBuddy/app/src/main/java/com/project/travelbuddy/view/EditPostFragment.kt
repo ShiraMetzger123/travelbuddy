@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -15,6 +14,7 @@ import com.google.firebase.storage.StorageReference
 import com.project.travelbuddy.R
 import com.project.travelbuddy.databinding.FragmentEditPostBinding
 import com.project.travelbuddy.model.TravelPost
+import com.project.travelbuddy.util.Constant.showToast
 import com.squareup.picasso.Picasso
 
 class EditPostFragment : Fragment(R.layout.fragment_edit_post) {
@@ -80,7 +80,7 @@ class EditPostFragment : Fragment(R.layout.fragment_edit_post) {
         val updatedLocation = binding.etLocation.text.toString().trim()
 
         if (updatedTitle.isEmpty() || updatedDescription.isEmpty() || updatedLocation.isEmpty()) {
-            Toast.makeText(requireContext(), "All fields are required!", Toast.LENGTH_SHORT).show()
+            showToast(requireContext(), "All fields are required!")
             return
         }
 
@@ -101,7 +101,7 @@ class EditPostFragment : Fragment(R.layout.fragment_edit_post) {
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Image upload failed!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Image upload failed!")
             }
     }
 
@@ -116,11 +116,11 @@ class EditPostFragment : Fragment(R.layout.fragment_edit_post) {
         firestore.collection("posts").document(postId!!)
             .update(updateData)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Post updated successfully!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Post updated successfully!")
                 findNavController().navigateUp()
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to update post!", Toast.LENGTH_SHORT).show()
+                showToast(requireContext(), "Failed to update post!")
             }
     }
 

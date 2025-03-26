@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.travelbuddy.db.CountryEntity
 import com.project.travelbuddy.repo.CountryRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CountryViewModel(private val repository: CountryRepository) : ViewModel() {
@@ -14,7 +15,7 @@ class CountryViewModel(private val repository: CountryRepository) : ViewModel() 
     val countries: LiveData<List<CountryEntity>> get() = _countries
 
     fun fetchCountriesData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getCountriesData()
             _countries.postValue(data)
         }

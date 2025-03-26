@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.project.travelbuddy.R
@@ -19,16 +20,30 @@ class TravelPostAdapter(private val posts: List<TravelPost>,
         private val description: TextView = itemView.findViewById(R.id.tvDescription)
         private val location: TextView = itemView.findViewById(R.id.tvLocation)
         private val image: ImageView = itemView.findViewById(R.id.ivPostImage)
+        private val progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
 
         fun bind(post: TravelPost) {
             title.text = post.title
             description.text = post.description
             location.text = post.location
 
+            progressBar.visibility = View.VISIBLE
+
             // Load Image with Picasso
             if (post.imageUrl.isNotEmpty()) {
-                Picasso.get().load(post.imageUrl).into(image)
+                Picasso.get().load(post.imageUrl)
+                    .into(image, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            progressBar.visibility = View.GONE
+                        }
+
+                        override fun onError(e: Exception?) {
+                            progressBar.visibility = View.GONE
+                            image.setImageResource(R.drawable.splash_image)
+                        }
+                    })
             } else {
+                progressBar.visibility = View.GONE
                 image.setImageResource(R.drawable.splash_image) // Fallback image
             }
             itemView.setOnClickListener {
